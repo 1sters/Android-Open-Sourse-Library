@@ -26,7 +26,8 @@ Android开发中，越来越多优秀的开源组件涌现处出来，可以帮�
 	* [json-smart](json/json-smart.md)
 	* [Jackson](json/jackson.md)
 
-# 关于我们
+
+## 关于我们
 
 爱分享，爱Android，爱移动互联网，你也可以成为我们一员~
 
@@ -34,5 +35,16 @@ Android开发中，越来越多优秀的开源组件涌现处出来，可以帮�
 * 贡献者：
 	* [Vincent 4J](https://github.com/vincent4j)
 	* [Iceskysl](https://github.com/iceskysl)
+
+## 感谢支持
+
+* [极客学院](http://www.jikexueyuan.com/)
+* [eoeAndroid 开发者社区](http://www.eoeandroid.com/)
+
+## 进度记录
+
+* 2014.12.25，大姑爷 和 4J 商定本选题，拟定目录结构，创建 GitHub 仓库，制定协同规范；
+* 2015.01.02，完成`Http请求组件`分类，包含`Volley`,`android-async-http`,`okhttp`和`HttpCache`；
+* 2015.01.05，完成`Volley`篇资料收集和撰写；
 
 
