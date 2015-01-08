@@ -19,7 +19,6 @@ Android开发中，越来越多优秀的开源组件涌现处出来，可以帮�
 	* [Volley](http/volley.md)
 	* [android-async-http](http/android-async-http.md)
 	* [okhttp](http/okhttp.md)
-	* [HttpCache](http/http-cache.md)
 * json数据解析组件
 	* [Gson](json/gson.md)
 	* [fast-json](json/fast-json.md)
@@ -44,7 +43,7 @@ Android开发中，越来越多优秀的开源组件涌现处出来，可以帮�
 ## 进度记录
 
 * 2014.12.25，大姑爷 和 4J 商定本选题，拟定目录结构，创建 GitHub 仓库，制定协同规范；
-* 2015.01.02，完成`Http请求组件`分类，包含`Volley`,`android-async-http`,`okhttp`和`HttpCache`；
+* 2015.01.02，完成`Http请求组件`分类，包含`Volley`,`android-async-http`,`okhttp`；
 * 2015.01.05，完成`Volley`篇资料收集和撰写；
 
 
