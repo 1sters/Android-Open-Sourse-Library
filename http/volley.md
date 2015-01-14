@@ -8,7 +8,7 @@
 适用场景：数据量不大，但是通讯频率较高的场景。
 
 官网介绍：
-httpshttps://android.googlesource.com/platform/frameworks/volley
+https://android.googlesource.com/platform/frameworks/volley
 
 官方教程：
 http://developer.android.com/training/volley/index.html
@@ -16,6 +16,8 @@ http://developer.android.com/training/volley/index.html
 ### Volley使用过程
 
 * 1.下载Volley源码->导入->引用库或打包成jar引用
+<img width="10" height="10">![Alt text](https://raw.githubusercontent.com/daguye918/Images/master/git-clone.png)
+</img>
 * 2.实现一个基本HTTP请求-StringRequest
 * 3.实现Post请求方式并传递参数
 * 4.请求队列的相关操作：取消、tag设置
