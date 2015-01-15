@@ -35,9 +35,8 @@ http://developer.android.com/training/volley/index.html
     2.创建Request--请求(可从多种继承子类中选择适用，返回不同数据类型)
     3.将Request添加到RequestQueue中
 基本代码实现：   
-
-    RequestQueue mQueue=Volley.newRequestQueue(this);
-	StringRequest mRequest=new StringRequest( "http://www.jikexueyuan.com",    			new Listener<String>() {
+```java    
+StringRequest mPostRequest=new StringRequest( "http://www.jikexueyuan.com", new Listener<String>() {
 
 			@Override
 			public void onResponse(String response) {
@@ -52,7 +51,8 @@ http://developer.android.com/training/volley/index.html
 				Log.e("jikexueyuan", "出错啦："+error.getMessage());
 			}
 		});
-	mQueue.add(mRequest);
+		mQueue.add(mPostRequest);
+```
 只需要简单几句代码，我们就可以实现一个基本的http请求。不再需要顾虑线程等复杂问题。
 
 #####实现Post请求方式并传递参数
