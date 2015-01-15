@@ -124,19 +124,41 @@ ImageRequest mImageRequest=new ImageRequest("", new Listener<Bitmap>() {
 			@Override
 			public void onResponse(Bitmap response) {
 				// TODO Auto-generated method stub
-				mImage.setImageBitmap(response);
+				mImage.setImageBitmap(response);//显示下载的网络图片
 			}
 		}, 1080, 1920, Config.RGB_565, new ErrorListener() {
 
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				// TODO Auto-generated method stub
-				
+				mImage.setImageResource(R.drawable.default_image); //没有读取到图片，显示默认图片
 			}
 		});
 		mQueue.add(mImageRequest);
 ```
 ######使用ImageLoader将图片直接缓存加载到ImageView控件    
+Volley提供了ImageLoader类，让我们更方便的实现网络图片的加载，它的用法主要有四步：   
+   
+	1.创建RequestQueue请求队列   
+	2.创建ImageLoader对象   
+	3.获取一个ImageListener对象   
+	4.调用ImageLoader的get方法来进行加载   
+主要代码如下：   
+```java
+ImageLoader imageLoader = new ImageLoader(mQueue, new ImageCache() {  
+    @Override  
+    public void putBitmap(String url, Bitmap bitmap) {  
+    }  
+  
+    @Override  
+    public Bitmap getBitmap(String url) {  
+        return null;  
+    }  
+});  
+ImageListener listener = ImageLoader.getImageListener(imageView,  
+        R.drawable.default_image, R.drawable.failed_image); 
+imageLoader.get("http://img.my.csdn.net/uploads/201404/13/1397393290_5765.jpeg", listener); 
+```
 ######使用NetworkImageView控件直接加载图片    
 ## Volley源码剖析
 
