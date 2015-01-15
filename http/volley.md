@@ -36,6 +36,7 @@ http://developer.android.com/training/volley/index.html
     3.将Request添加到RequestQueue中
 基本代码实现：   
 ```java    
+RequestQueue mQueue=Volley.newRequestQueue(this);
 StringRequest mPostRequest=new StringRequest( "http://www.jikexueyuan.com", new Listener<String>() {
 
 			@Override
