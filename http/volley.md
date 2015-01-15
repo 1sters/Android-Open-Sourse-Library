@@ -119,7 +119,7 @@ StringRequest mPostRequest=new StringRequest(Method.POST, "http://www.jikexueyua
 ######使用ImageRequest下载图片   
 ImageRequest是继承了Request的请求，它与其他Request的使用方式一样，通过传递URL参数，就可以返回Bitmap类型的图片数据：
 ```java   
-ImageRequest mImageRequest=new ImageRequest("", new Listener<Bitmap>() {
+ImageRequest mImageRequest=new ImageRequest("http://s1.jikexueyuan.com/current/static/images/logo.png", new Listener<Bitmap>() {
 
 			@Override
 			public void onResponse(Bitmap response) {
@@ -157,24 +157,36 @@ ImageLoader imageLoader = new ImageLoader(mQueue, new ImageCache() {
 });  
 ImageListener listener = ImageLoader.getImageListener(imageView,  
         R.drawable.default_image, R.drawable.failed_image); 
-imageLoader.get("http://img.my.csdn.net/uploads/201404/13/1397393290_5765.jpeg", listener); 
+imageLoader.get("http://s1.jikexueyuan.com/current/static/images/logo.png", listener); 
 ```
-######使用NetworkImageView控件直接加载图片    
-## Volley源码剖析
+######使用NetworkImageView控件直接加载图片  
+NetworkImageView是直接继承ImageView来实现的，能够在满足ImageView所有功能之外，额外的提供了直接在控件上加载网络图片的功能，使用它需要五个步骤：   
 
-### 网络数据请求详解
+	1.创建RequestQueue请求队列
+	2.创建Imageloader对象
+	3.在xml布局中使用NetworkImageView进行布局
+	4.获取NetworkImageView控件实例
+	5.使用控件实例的setImageUrl方法加载网络图片
+前面两步都与上面一样，我就不再介绍，直接从第三步开始，我们在xml中添加一个控件：
+```xml
+<com.android.volley.toolbox.NetworkImageView   
+        android:id="@+id/network_image_view"  
+        android:layout_width="200dp"  
+        android:layout_height="200dp"  
+        android:layout_gravity="center_horizontal"  
+        />  
+```
+然后在代码中，获取该控件的实例，并且设置默认图片，加载异常图片，以及我们所要加载的网络图片的URL，如下：
+```java
+NetworkImageView networkImageView = (NetworkImageView) findViewById(R.id.network_image_view); 
+networkImageView.setDefaultImageResId(R.drawable.default_image);  
+networkImageView.setErrorImageResId(R.drawable.failed_image);  
+networkImageView.setImageUrl("http://s1.jikexueyuan.com/current/static/images/logo.png",  
+                imageLoader);  
+```
+###总结
+以上就是Volley的一些基本使用方法，熟悉了这些用法，可以大大减少我们的代码量，同时也让我们不用再烦恼线程，缓存这些头疼的问题，大大提高了开发的效率。下节课，我们会带大家来仔细研究下Volley的代码，这节课就到这里。谢谢大家。
 
-1.从RequestQueue入手，new、start、add都做了些什么？
-2.看看StringRequest是怎么实现的？
-3.参考StringRequest定制自己的请求类
-4.进阶优化，进行封装组合
-
-### 网络图片缓存加载详解
-
-1.ImageRequest的实现方式解析
-2.ImageLoader的操作流程
-3.进阶定制，增加缓存到内存的方式，提高加载效率
-4.NetworkImageView解析
 
 
 
