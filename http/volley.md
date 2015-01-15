@@ -88,6 +88,25 @@ StringRequest mPostRequest=new StringRequest(Method.POST, "http://www.jikexueyua
 		mQueue.add(mPostRequest);
 ```
 #####请求队列的相关操作：取消、tag设置
+当我们发起一些请求之后，我们通常会在请求结束时来做一些页面反馈，包括弹出框提示，数据绑定展示等操作，但是，很多时候，用户往往在等待的时候退出这个页面。这个时候，我们在这个页面发起的请求就没有再继续的必要，如果不停止，还有可能因为在回调中使用activity中的一些对象而导致程序异常。   
+因此，Volley提供了一个很好的机制，帮助我们来停止请求队列中的某个或者全部请求。   
+我们可以适用Request的cancel事件或者是RequestQueue的cancelAll("tag")事件来取消，代码如下：
+```java   
+		//为Request设置tag
+		mLoginRequest.setTag("login");
+		mNewsRequest.setTag("news");
+		mMsgListRequest.setTag("msg");
+		mMsgRequest.setTag("msg");
+		
+		//添加到队列中
+		mQueue.add(mLoginRequest);
+		mQueue.add(mNewsRequest);
+		mQueue.add(mMsgListRequest);
+		mQueue.add(mMsgRequest);
+		
+		//取消队列中包含msg标签的请求
+		mQueue.cancelAll("msg");
+```
 #####使用Volley加载网络图片的3种方式：
 
 	* ImageRequest
