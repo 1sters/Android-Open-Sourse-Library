@@ -92,6 +92,9 @@ StringRequest mPostRequest=new StringRequest(Method.POST, "http://www.jikexueyua
 因此，Volley提供了一个很好的机制，帮助我们来停止请求队列中的某个或者全部请求。   
 我们可以适用Request的cancel事件或者是RequestQueue的cancelAll("tag")事件来取消，代码如下：
 ```java   
+
+		mLoginRequest.cancel();//取消单个请求
+		
 		//为Request设置tag
 		mLoginRequest.setTag("login");
 		mNewsRequest.setTag("news");
