@@ -1,8 +1,11 @@
 # Volley基本使用介绍
 
 ## Volley是什么？ 
-Volley是Google在2013 Google I/O 大会发布的Android平台网络通讯库，旨在帮助开发者实现更快速，简单，健壮的网络通讯。同时Volley也支持网络图片的缓存加载功能。
-<img src='https://raw.githubusercontent.com/daguye918/Images/master/volley.png' width='500'/>   
+Volley是Google在2013 Google I/O 大会发布的Android平台网络通讯库，旨在帮助开发者实现更快速，简单，健壮的网络通讯。同时Volley也支持网络图片的缓存加载功能。 
+
+![volley](images/volley.png)
+
+
 在发布时所配的是这样一张图片，我们可以看到多人发射弓箭的场景。   
 谷歌在告诉我们，volley适用于数据量不大，但是通讯频率较高的场景。   
 
