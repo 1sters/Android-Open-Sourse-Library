@@ -110,12 +110,34 @@ StringRequest mPostRequest=new StringRequest(Method.POST, "http://www.jikexueyua
 		//取消队列中包含msg标签的请求
 		mQueue.cancelAll("msg");
 ```
-#####使用Volley加载网络图片的3种方式：
+#####使用Volley加载网络图片的3种方式     
+我们在开发软件的过程中，经常都需要加载许多的网络图片，对应这些图片的下载，缓存，读取设置等操作往往令我们十分的头疼，Volley给我们提供了三个十分简单的方法来加载网络图片。
 
 	* ImageRequest
 	* ImageLoader
 	* NetworkImageView
+######使用ImageRequest下载图片   
+ImageRequest是继承了Request的请求，它与其他Request的使用方式一样，通过传递URL参数，就可以返回Bitmap类型的图片数据：
+```java   
+ImageRequest mImageRequest=new ImageRequest("", new Listener<Bitmap>() {
 
+			@Override
+			public void onResponse(Bitmap response) {
+				// TODO Auto-generated method stub
+				mImage.setImageBitmap(response);
+			}
+		}, 1080, 1920, Config.RGB_565, new ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		mQueue.add(mImageRequest);
+```
+######使用ImageLoader将图片直接缓存加载到ImageView控件    
+######使用NetworkImageView控件直接加载图片    
 ## Volley源码剖析
 
 ### 网络数据请求详解
