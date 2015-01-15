@@ -37,7 +37,7 @@ http://developer.android.com/training/volley/index.html
 基本代码实现：   
 ```java    
 RequestQueue mQueue=Volley.newRequestQueue(this);
-StringRequest mPostRequest=new StringRequest( "http://www.jikexueyuan.com", new Listener<String>() {
+StringRequest mRequest=new StringRequest( "http://www.jikexueyuan.com", new Listener<String>() {
 
 			@Override
 			public void onResponse(String response) {
@@ -52,7 +52,7 @@ StringRequest mPostRequest=new StringRequest( "http://www.jikexueyuan.com", new 
 				Log.e("jikexueyuan", "出错啦："+error.getMessage());
 			}
 		});
-		mQueue.add(mPostRequest);
+		mQueue.add(mRequest);
 ```
 只需要简单几句代码，我们就可以实现一个基本的http请求。不再需要顾虑线程等复杂问题。
 
