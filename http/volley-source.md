@@ -10,7 +10,7 @@
 我们打开Volley类。可以看到，Volley当中只有两个重载的方法newRequestQueue。用于创建一个请求队列。
 一般我们默认使用newRequestQueue(Context context) 只传递一个context参数的方法。这个方法则是调用了上面两个参数的方法，后面的参数传递为null。   
 
-``Java   
+```java    
 if (stack == null) {
             if (Build.VERSION.SDK_INT >= 9) {
                 stack = new HurlStack();
@@ -21,10 +21,11 @@ if (stack == null) {
             }
         }
 
-        Network network = new BasicNetwork(stack);   
-        
-``Java   
-从这个代码段我们可以看出。如果stack为空得话volley会根据系统版本，选择对应的方式来创建。如果我们传递了自己自定义的stack 那么就直接使用。因此，如果你想要个性化自己来实现stack，就可以直接调用这个方法来创建队列。
+        Network network = new BasicNetwork(stack);
+```
+
+从这个代码段我们可以看出。如果stack为空得话volley会根据系统版本，选择对应的方式来创建。如果我们传递了自己自定义的stack 那么就直接使用。因此，如果你想要个性化自己来实现stack，就可以直接调用这个方法来创建队列。   
+那么这个方法具体做了什么事情呢
 
 
 1.从RequestQueue入手，new、start、add都做了些什么？   
