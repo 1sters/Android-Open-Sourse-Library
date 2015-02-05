@@ -10,7 +10,28 @@
 我们打开Volley类。可以看到，Volley当中只有两个重载的方法newRequestQueue。用于创建一个请求队列。
 一般我们默认使用newRequestQueue(Context context) 只传递一个context参数的方法。这个方法则是调用了上面两个参数的方法，后面的参数传递为null。   
 
-```java    
+在这个方法，主要做了几个事情：
+   1.设置默认的缓存文件夹
+   ```java   
+   private static final String DEFAULT_CACHE_DIR = "volley";
+   
+   File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR);
+   ```
+   
+   2.获取APP的包名，版本号，添加userAgent到请求头中，如果获取失败则默认使用Volley/0：
+   ```java    
+   String userAgent = "volley/0";
+        try {
+            String packageName = context.getPackageName();
+            PackageInfo info = context.getPackageManager().getPackageInfo(packageName, 0);
+            userAgent = packageName + "/" + info.versionCode;
+        } catch (NameNotFoundException e) {
+        }
+
+
+   3.对stack进行相关操作，得到NetWork对象。从这个代码段我们可以看出。如果stack为空得话volley会根据系统版本，选择对应的方式来创建。如果我们传递了自己自定义的stack 那么就直接使用。因此，如果你想要个性化自己来实现stack，就可以直接调用这个方法来创建队列。   
+   
+   ```java    
 if (stack == null) {
             if (Build.VERSION.SDK_INT >= 9) {
                 stack = new HurlStack();
@@ -24,8 +45,12 @@ if (stack == null) {
         Network network = new BasicNetwork(stack);
 ```
 
-从这个代码段我们可以看出。如果stack为空得话volley会根据系统版本，选择对应的方式来创建。如果我们传递了自己自定义的stack 那么就直接使用。因此，如果你想要个性化自己来实现stack，就可以直接调用这个方法来创建队列。   
-那么这个方法具体做了什么事情呢
+  4.最后，根据设定的缓存文件夹新建一个缓存对象，创建一个请求队列，参数为上面创建的缓存对象及NetWork对象，然后启动请求队列，同时将队列对象作为返回值返回，我们调用这个方法就会将返回值赋值给我们创建的全局队列对象。   
+  
+  ```java   
+  RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
+  queue.start();
+```
 
 
 1.从RequestQueue入手，new、start、add都做了些什么？   
