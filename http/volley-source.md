@@ -278,19 +278,232 @@ request.addMarker("cache-hit");
                     
 以上就是缓存线程所在重复做的事情，同样会在缓存队列空的时候等待新请求进来继续执行。   
 
+###Request   
+接着，我们来看看最常使用到的请求类Request，它是一个抽象类，我们所使用的StringRequest，JsonRequest等都是继承于它来实现的，这里我们不详细讲解它的实现方式，我们以StringRequest为例来看看一个特定类型的请求是怎么实现的   
+我们可以看到，它只有很少的一部分代码，包括两个重载的构造函数，以及2个重写的方法，parseNetworkResponse，以及deliverResponse。   
+parseNetworkResponse主要用于将请求得到的数据转换成我们所需要的对应格式的数据，如StringRequest就是将请求结果转为String：   
 
+```java    
+@Override
+    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+        String parsed;
+        try {
+            parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+        } catch (UnsupportedEncodingException e) {
+            parsed = new String(response.data);
+        }
+        return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+    }
+```
+
+而deliverResponse则是将请求结果以对应的数据格式传递给回调：   
+
+```java    
+@Override
+    protected void deliverResponse(String response) {
+        mListener.onResponse(response);
+    }
+```
+
+这里，我们不妨来定义一个返回xml格式的请求：   
+我们在项目中新建一个XmlRequest，继承于Request:代码如下   
+
+```java    
+public class XmlRequest extends Request<XmlPullParser> {
+	private final Listener<XmlPullParser> mListener;
+	
+	
+	public XmlRequest(String url,Listener<XmlPullParser> listener, ErrorListener errorListener) {
+		this(Method.GET,url,listener,errorListener);
+		
+	}
+	public XmlRequest(int mothod,String url,Listener<XmlPullParser> listener, ErrorListener errorListener) {
+		super(mothod, url, errorListener);  
+        mListener = listener; 
+	}
+
+	@Override
+	protected Response<XmlPullParser> parseNetworkResponse(
+			NetworkResponse response) {
+		try{
+			String xmlString=new String(response.data,HttpHeaderParser.parseCharset(response.headers));
+			XmlPullParserFactory factory=XmlPullParserFactory.newInstance();
+			XmlPullParser xmlPullParser=factory.newPullParser();
+			xmlPullParser.setInput(new StringReader(xmlString));
+			return Response.success(xmlPullParser, HttpHeaderParser.parseCacheHeaders(response));
+		}catch(UnsupportedEncodingException e){
+			return Response.error(new ParseError(e));
+		}catch (XmlPullParserException e) {
+			return Response.error(new ParseError(e));
+		}
+	}
+
+	@Override
+	protected void deliverResponse(XmlPullParser response) {
+		mListener.onResponse(response);
+	}
+
+}
+```
+
+这样，我们就可以根据自己的需要定制自己想要的数据类型。我们也可以使用第三方库gson之类，直接将结果映射到实体上，定制出更加方便的请求。
+## 网络图片缓存加载详解   
+接下来，我们来看看关于网络图片缓存加载的相关源码
+###ImageRequest   
+首先我们来看看ImageRequest，它是继承于Request的类，我们从前面的解析就能知道，ImageRequest是定制了Bitmap格式返回数据的请求，主要是对图片数据的一些处理，我们就不详细介绍。   
+
+###ImageLoader   
+那么我们来看看ImageLoader，使用ImageLoader是大部分人使用Volley来加载图片的方式，我们从构造函数入手：   
+
+```java    
+    public ImageLoader(RequestQueue queue, ImageCache imageCache) {
+        mRequestQueue = queue;
+        mCache = imageCache;
+    }
+```
+
+这里一般我们传入的是我们新建的ImageCache，大部分情况下我们都没做相关的操作，我们接着从get方法来看：   
 
     
+主要有两个重载方式，一个有设置最大宽高，一个则默认没有，在这里，主要做几件事：   
+1.判断加载的图片url是否在缓存中有数据，如果有，就取出来，通过接口分发出去,需要注意的是，这里所使用的是我们所新建的缓存对象，如果你默认没做处理，这里都是没有缓存数据，需要通过后面新建图片请求，来判断请求是否有缓存并返回：   
 
+```java    
+        final String cacheKey = getCacheKey(requestUrl, maxWidth, maxHeight);
+        // Try to look up the request in the cache of remote images.
+        Bitmap cachedBitmap = mCache.getBitmap(cacheKey);
+        if (cachedBitmap != null) {
+            // Return the cached bitmap.
+            ImageContainer container = new ImageContainer(cachedBitmap, requestUrl, null, null);
+            imageListener.onResponse(container, true);
+            return container;
+        }
+```
 
-1.从RequestQueue入手，new、start、add都做了些什么？   
-2.看看StringRequest是怎么实现的？   
-3.参考StringRequest定制自己的请求类  
-4.进阶优化，进行封装组合  
+2.如果不存在缓存，先告诉传递空数据，让它知道要加载默认图片：   
 
-## 网络图片缓存加载详解
+```java    
+        ImageContainer imageContainer =
+                new ImageContainer(null, requestUrl, cacheKey, imageListener);
+        // Update the caller to let them know that they should use the default bitmap.
+        imageListener.onResponse(imageContainer, true);
+```
 
-1.ImageRequest的实现方式解析
-2.ImageLoader的操作流程
-3.进阶定制，增加缓存到内存的方式，提高加载效率
-4.NetworkImageView解析
+```java    
+    public static ImageListener getImageListener(final ImageView view,
+            final int defaultImageResId, final int errorImageResId) {
+        return new ImageListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (errorImageResId != 0) {
+                    view.setImageResource(errorImageResId);
+                }
+            }
+            @Override
+            public void onResponse(ImageContainer response, boolean isImmediate) {
+                if (response.getBitmap() != null) {
+                    view.setImageBitmap(response.getBitmap());
+                } else if (defaultImageResId != 0) {
+                    view.setImageResource(defaultImageResId);
+                }
+            }
+        };
+    }
+```
+
+3.判断这个url是否已经存在请求队列中，如果存在，就等待请求，不继续操作：   
+
+```java    
+        BatchedImageRequest request = mInFlightRequests.get(cacheKey);
+        if (request != null) {
+            // If it is, add this request to the list of listeners.
+            request.addContainer(imageContainer);
+            return imageContainer;
+        }
+```
+
+4.如果不存在，创建一个请求，添加到队列中：   
+
+```java    
+        Request<Bitmap> newRequest = makeImageRequest(requestUrl, maxWidth, maxHeight, cacheKey);
+        mRequestQueue.add(newRequest);
+        mInFlightRequests.put(cacheKey,
+                new BatchedImageRequest(newRequest, imageContainer));
+        return imageContainer;
+``` 
+
+```java    
+    protected Request<Bitmap> makeImageRequest(String requestUrl, int maxWidth, int maxHeight, final String cacheKey) {
+        return new ImageRequest(requestUrl, new Listener<Bitmap>() {
+            @Override
+            public void onResponse(Bitmap response) {
+                onGetImageSuccess(cacheKey, response);
+            }
+        }, maxWidth, maxHeight,
+        Config.RGB_565, new ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onGetImageError(cacheKey, error);
+            }
+        });
+    }
+```
+
+在获取数据成功之后，就会调用我们创建的cache对象来保存缓存数据，如果我们不做操作，则默认会在请求那边来保存缓存。   
+
+```java    
+    protected void onGetImageSuccess(String cacheKey, Bitmap response) {
+        // cache the image that was fetched.
+        mCache.putBitmap(cacheKey, response);
+        // remove the request from the list of in-flight requests.
+        BatchedImageRequest request = mInFlightRequests.remove(cacheKey);
+        if (request != null) {
+            // Update the response bitmap.
+            request.mResponseBitmap = response;
+            // Send the batched response
+            batchResponse(cacheKey, request);
+        }
+    }
+```
+
+这里，我们可以看出ImageLoader的缓存流程是这样的：
+
+![volley](images/imageloader.png)
+
+Volley默认使用的是缓存到SD卡的方式，对于缓存图片来说，我们更喜欢缓存到内存上，因此，我们就可以通过自定义缓存的方式，来加大缓存图片的效率。我们可以新建一个内存缓存 LruBitmapCache：   
+
+```java    
+public class LruBitmapCache implements ImageCache {  
+    private LruCache<String, Bitmap> mCache;  
+    public LruBitmapCache() {  
+        int maxSize = 10 * 1024 * 1024;  
+        mCache = new LruCache<String, Bitmap>(maxSize) {  
+            @Override  
+            protected int sizeOf(String key, Bitmap bitmap) {  
+                return bitmap.getRowBytes() * bitmap.getHeight();  
+            }  
+        };  
+    }  
+    @Override  
+    public Bitmap getBitmap(String url) {  
+        return mCache.get(url);  
+    }  
+    @Override  
+    public void putBitmap(String url, Bitmap bitmap) {  
+        mCache.put(url, bitmap);  
+    }  
+}  
+```
+
+在使用ImageLoader的时候只要使用这个缓存作为参数就可以：   
+
+```java    
+ImageLoader imageLoader = new ImageLoader(mQueue, new LruBitmapCache()); 
+```
+###NetworkImageView   
+最后，我们来看看Volley提供的自定义控件NetworkImageView   
+它是继承于ImageView 的自定义控件，在当中加入了设置默认图片及错误图片等方法，通过setImageUrl方法，传递ImageLoader对象，通过ImageLoader对象来加载。这里我们就不做太多介绍。   
+
+##总结   
+通过了解Volley的一些重要类的源码之后，我们都被谷歌工程师强大的逻辑和灵活的代码思维给折服了，我们可以从中学习到很多扩展性强大的代码结构方式。   
+目前我们所讲解的仅仅是初步的源码分析，如果有兴趣大家也可以继续深入，把最内层的实现都分析清楚。研究完源码，不妨尝试着自己来封装一个类似的库出来。一步步完善。这就是开源的乐趣。
