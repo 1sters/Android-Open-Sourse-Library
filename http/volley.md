@@ -20,7 +20,7 @@ http://developer.android.com/training/volley/index.html
 
 ### 下载Volley源码
 
-我们有几种方式来下载'Volley'源码：   
+我们有几种方式来下载`Volley`源码：    
 
 * 1. git命令克隆：git clone https://android.googlesource.com/platform/frameworks/volley   
 * 2. 直接访问 https://android.googlesource.com/platform/frameworks/volley   
