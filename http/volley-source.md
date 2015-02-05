@@ -228,7 +228,8 @@ Cache.Entry entry = mCache.get(request.getCacheKey());
                     mNetworkQueue.put(request);
                     continue;
                 }
-                ```
+```
+
                 
 4.如果缓存数据已经失效，那么就将缓存数据对象设置到请求中，将请求添加到网络队列去更新缓存数据：   
 
@@ -239,7 +240,8 @@ if (entry.isExpired()) {
                     mNetworkQueue.put(request);
                     continue;
                 }
-                ```
+```
+
                 
 5.获取缓存数据的新旧程度，如果较新，就直接使用接口分发出去，如果是间隔比较久的缓存，会在分发的同时，将请求添加到网络队列中去更新缓存数据：   
 
@@ -271,7 +273,8 @@ request.addMarker("cache-hit");
                             }
                         }
                     });
-                    ```
+```
+
                     
 以上就是缓存线程所在重复做的事情，同样会在缓存队列空的时候等待新请求进来继续执行。   
 
