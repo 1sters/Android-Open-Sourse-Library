@@ -59,50 +59,81 @@ client.get("http://www.jikexueyuan.com", new AsyncHttpResponseHandler() {
     
 });
 ```
+在这里。Android-Async-Http提供了许多不同返回类型的回调提供给我们使用
+只需要简单几句代码，我们就可以实现一个基本的http请求。这样的代码量是不是写起来非常的痛快？   
+除了以上三个基本的回调。Android-Async-Http还提供了许多相关回调方便我们在请求的各个过程做各做处理操作。
+包括有：
 
-只需要简单几句代码，我们就可以实现一个基本的http请求。这样的代码量是不是写起来非常的痛快？
+```java    
+@Override
+			public void onFinish() {
+				// TODO Auto-generated method stub
+				super.onFinish();
+			}
+			
+			@Override
+			public void onCancel() {
+				// TODO Auto-generated method stub
+				super.onCancel();
+			}
+			
+			@Override
+			public void onProgress(int bytesWritten, int totalSize) {
+				// TODO Auto-generated method stub
+				super.onProgress(bytesWritten, totalSize);
+			}
+			
+			@Override
+			public void onRetry(int retryNo) {
+				// TODO Auto-generated method stub
+				super.onRetry(retryNo);
+			}
+```
+
+
 
 ### 实现Post请求方式并传递参数
 
 使用Android-Async-Http来实现Post请求一样很简单，只需要调用post方法，并且用RequestParams来设定参数就可以：   
 
 ```java    
-RequestParams params = new RequestParams();
-params.put("key", "value");
-StringRequest mPostRequest=new StringRequest(Method.POST, "http://www.jikexueyuan.com", new Listener<String>() {
-
+AsyncHttpClient mClient=new AsyncHttpClient();
+RequestParams mParams = new RequestParams();
+mParams.put("username", "admin");
+mParams.put("password", "123456");
+mClient.get("http://www.jikexueyuan.com",mParams,new AsyncHttpResponseHandler() {
+			
 			@Override
-			public void onResponse(String response) {
+			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
 				// TODO Auto-generated method stub
-				Log.e("jikexueyuan", "请求结果："+response);
+				
 			}
-		}, new ErrorListener() {
-
+			
 			@Override
-			public void onErrorResponse(VolleyError error) {
+			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
 				// TODO Auto-generated method stub
-				Log.e("jikexueyuan", "出错啦："+error.getMessage());
+				
 			}
-		}){
 			@Override
-			protected Map<String, String> getParams() throws AuthFailureError {
+			public void onStart() {
 				// TODO Auto-generated method stub
-				Map<String, String> map=new HashMap<String, String>();
-				map.put("参数名1", "参数值1");
-				map.put("参数名2", "参数值2");
-				return map;
+				super.onStart();
 			}
-		};
-		mQueue.add(mPostRequest);
+			});
+	}
 ```
 
 ### 实现文件上传，下载
+很多时候，我们经常会需要上传图片或者文件到服务器，或者实现版本更新的时候从服务器下载文件。这时候Android-Async-Http可以很好得帮助我们来实现这些操作。
+
+上传文件我们只需要在RequestParams的参数中传入File类型或者InputStream类型的数据。带入到请求中。下载的话只需要使用获取byte[]类型数据的回调就可以。
+
 
 
 
 ## 总结
 
-以上就是Android-Async-Http的一些基本使用方法
+以上就是Android-Async-Http的一些基本使用方法，使用它，我们可以很方便的在项目开发当中快速的实现各种各样的网络请求。甚至是上传文件，下载文件都只需要简单的几句代码就可以做到。是不是十分方便呢。
 
 
 
