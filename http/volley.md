@@ -32,8 +32,10 @@ http://developer.android.com/training/volley/index.html
  
 所需权限：   
 
-```xml
+``` xml
+
 	<uses-permission  android:name="android.permission.INTERNET"/>
+	
 ```
 
 我们只需要三部曲就可以实现：     
@@ -44,7 +46,8 @@ http://developer.android.com/training/volley/index.html
 
 基本代码实现：   
 
-```java    
+``` java    
+
 RequestQueue mQueue=Volley.newRequestQueue(this);
 StringRequest mRequest=new StringRequest( "http://www.jikexueyuan.com", new Listener<String>() {
 
@@ -62,6 +65,7 @@ StringRequest mRequest=new StringRequest( "http://www.jikexueyuan.com", new List
 			}
 		});
 		mQueue.add(mRequest);
+		
 ```
 
 只需要简单几句代码，我们就可以实现一个基本的http请求。不再需要顾虑线程等复杂问题。
